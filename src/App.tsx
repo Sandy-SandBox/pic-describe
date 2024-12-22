@@ -7,6 +7,7 @@ import { Navbar } from "./components/Navbar";
 import { useStore } from "./store/useStore";
 import { GrammarError } from "./types";
 import { getRandomImage } from "./utils/pixabay";
+import { Footer } from "./components/Footer";
 
 function App() {
   const { entries, isDarkMode, addEntry, toggleDarkMode } = useStore();
@@ -25,7 +26,7 @@ function App() {
       if (imageData) {
         setGrammarErrors([]);
         setCurrentImage({
-          url: imageData.urls.regular,
+          url: imageData.urls.full,
           photographer: imageData.user.name,
           photographerUrl: imageData.user.links.html,
         });
@@ -82,14 +83,14 @@ function App() {
 
   return (
     <div className={isDarkMode ? "dark" : ""}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col">
         <Navbar
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
           onShowSaved={() => setShowSaved(true)}
         />
 
-        <main className="max-w-4xl mx-auto pt-24 pb-8 px-4 space-y-6">
+        <main className="flex-grow max-w-4xl mx-auto pt-24 pb-8 px-4 space-y-6">
           <ImageViewer
             currentImage={currentImage?.url || ""}
             topic={topic}
@@ -114,6 +115,8 @@ function App() {
             />
           )}
         </main>
+
+        <Footer />
       </div>
     </div>
   );

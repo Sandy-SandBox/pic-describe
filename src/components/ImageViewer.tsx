@@ -25,6 +25,7 @@ export const ImageViewer: React.FC<Props> = ({
     "Food",
     "Architecture",
     "People",
+    "Sports",
   ];
 
   const handleNewImage = async () => {

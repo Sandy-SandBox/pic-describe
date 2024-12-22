@@ -26,7 +26,7 @@ export const useStore = create<Store>()(
   persist(
     (set) => ({
       entries: [],
-      isDarkMode: false,
+      isDarkMode: true,
       addEntry: (entry) =>
         set((state) => ({ entries: [entry, ...state.entries] })),
       deleteEntry: (id) =>

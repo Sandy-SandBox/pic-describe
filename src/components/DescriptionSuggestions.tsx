@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Lightbulb, Loader2, ChevronRight } from "lucide-react";
 import { generateImageDescription } from "../services/gemini";
 
@@ -14,6 +14,12 @@ export const DescriptionSuggestions: React.FC<Props> = ({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSuggestions([]);
+    setError(null);
+    setLoading(false);
+  }, [imageUrl]);
 
   const generateSuggestions = async () => {
     setLoading(true);
@@ -41,17 +47,17 @@ export const DescriptionSuggestions: React.FC<Props> = ({
         <button
           onClick={generateSuggestions}
           disabled={loading}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-md transition-all duration-300 disabled:opacity-50 transform hover:scale-105"
+          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-md transition-all duration-300 disabled:opacity-50 transform hover:scale-105 custom-scrollbar"
         >
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Generating ideas...</span>
+              {/* <span>Generating ideas...</span> */}
             </>
           ) : (
             <>
               <Lightbulb className="w-4 h-4" />
-              <span>Get AI Suggestions</span>
+              {/* <span>Get AI Suggestions</span> */}
             </>
           )}
         </button>
@@ -64,7 +70,7 @@ export const DescriptionSuggestions: React.FC<Props> = ({
       )}
 
       {suggestions.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar">
           {suggestions.map((suggestion, index) => (
             <div
               key={index}
