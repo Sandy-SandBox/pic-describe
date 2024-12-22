@@ -5,18 +5,20 @@ import {
   Save,
   Wand2,
   Timer as TimerIcon,
-  TimerOff,
 } from "lucide-react";
 import { GrammarError } from "../types";
 import { WordCounter } from "./WordCounter";
+import { Timer } from "./Timer";
 import { SentenceStarters } from "./SentenceStarters";
 import { VoiceInput } from "./VoiceInput";
+import { DescriptionSuggestions } from "./DescriptionSuggestions";
 
 interface Props {
   onDescriptionChange: (text: string) => void;
   onSave: (description: string, timeTaken: number) => void;
   grammarErrors: GrammarError[];
   topic: string;
+  currentImage: string;
 }
 
 export const DescriptionEditor: React.FC<Props> = ({
@@ -24,12 +26,27 @@ export const DescriptionEditor: React.FC<Props> = ({
   onSave,
   grammarErrors,
   topic,
+  currentImage,
 }) => {
   const [description, setDescription] = useState("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
+  const previousImageRef = useRef(currentImage);
+
+  useEffect(() => {
+    if (previousImageRef.current !== currentImage) {
+      setDescription("");
+      setIsTimerRunning(false);
+      setElapsedTime(0);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      onDescriptionChange("");
+      previousImageRef.current = currentImage;
+    }
+  }, [currentImage, onDescriptionChange]);
 
   useEffect(() => {
     onDescriptionChange(description);
@@ -118,8 +135,13 @@ export const DescriptionEditor: React.FC<Props> = ({
     setDescription(fixedText);
   };
 
+  const handleSuggestionSelect = (suggestion: string) => {
+    setDescription(suggestion);
+    onDescriptionChange(suggestion);
+  };
+
   return (
-    <div className="w-full max-w-2xl mx-auto mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+    <div className="w-full max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
       <div className="flex items-center justify-between mb-4">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Your Description
@@ -138,7 +160,7 @@ export const DescriptionEditor: React.FC<Props> = ({
             >
               {isTimerRunning ? (
                 <>
-                  <TimerOff className="w-4 h-4" />
+                  <TimerIcon className="w-4 h-4" />
                   <span>
                     {Math.floor(elapsedTime / 60)}:
                     {(elapsedTime % 60).toString().padStart(2, "0")}
@@ -147,7 +169,7 @@ export const DescriptionEditor: React.FC<Props> = ({
               ) : (
                 <>
                   <TimerIcon className="w-4 h-4" />
-                  <span>Start Timer</span>
+                  {/* <span>Start Timer</span> */}
                 </>
               )}
             </button>
@@ -155,14 +177,22 @@ export const DescriptionEditor: React.FC<Props> = ({
         </div>
       </div>
 
-      <SentenceStarters topic={topic} onSelect={handlePromptSelect} />
+      {!description && (
+        <DescriptionSuggestions
+          imageUrl={currentImage}
+          onSuggestionSelect={handleSuggestionSelect}
+        />
+      )}
 
       <div className="mt-4 relative">
         <textarea
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => {
+            setDescription(e.target.value);
+            onDescriptionChange(e.target.value);
+          }}
           placeholder="Write your description here... Try to be as detailed as possible!"
-          className="w-full h-32 p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 pr-12"
+          className="w-full h-32 p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 pr-12 custom-scrollbar"
         />
         <div className="absolute right-2 bottom-2">
           <VoiceInput onTranscript={handleVoiceInput} />
@@ -171,7 +201,7 @@ export const DescriptionEditor: React.FC<Props> = ({
 
       {grammarErrors.length > 0 && (
         <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-md">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="flex items-center text-sm font-medium text-yellow-800 dark:text-yellow-200">
               <AlertCircle className="w-4 h-4 mr-2" />
               Grammar Suggestions
@@ -185,17 +215,20 @@ export const DescriptionEditor: React.FC<Props> = ({
               <span>Auto-fix All</span>
             </button>
           </div>
-          <ul className="space-y-2">
+          <ul className="space-y-4">
             {grammarErrors.map((error, index) => (
               <li
                 key={index}
-                className="text-sm text-yellow-700 dark:text-yellow-300 flex items-center justify-between"
+                className="text-sm border-l-2 border-yellow-400 dark:border-yellow-600 pl-3"
               >
-                <span>{error.message}</span>
+                <div className="text-yellow-700 dark:text-yellow-300 font-medium mb-1">
+                  Error: {error.message}
+                </div>
                 {error.suggestions && error.suggestions.length > 0 && (
-                  <span className="text-yellow-600 dark:text-yellow-400">
-                    Suggestion: {error.suggestions[0]}
-                  </span>
+                  <div className="text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/40 p-2 rounded-md mt-1">
+                    <span className="font-medium">Suggestion: </span>
+                    {error.suggestions[0]}
+                  </div>
                 )}
               </li>
             ))}

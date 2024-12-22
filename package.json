@@ -10,13 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "languagetool-api": "^1.1.2",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "zustand": "^4.5.2",
-    "languagetool-api": "^1.1.2",
-    "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",

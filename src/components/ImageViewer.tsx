@@ -6,7 +6,7 @@ interface Props {
   currentImage: string;
   topic: string;
   onTopicChange: (topic: string) => void;
-  onNewImage: () => void;
+  onNewImage: () => Promise<void>;
 }
 
 export const ImageViewer: React.FC<Props> = ({
@@ -25,11 +25,23 @@ export const ImageViewer: React.FC<Props> = ({
     "Food",
     "Architecture",
     "People",
-    "Sports",
   ];
 
-  const handleTopicChange = (newTopic: string) => {
+  const handleNewImage = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await onNewImage();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load image");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTopicChange = async (newTopic: string) => {
     onTopicChange(newTopic);
+    await handleNewImage();
   };
 
   return (
@@ -40,7 +52,8 @@ export const ImageViewer: React.FC<Props> = ({
           <select
             value={topic}
             onChange={(e) => handleTopicChange(e.target.value)}
-            className="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1"
+            disabled={loading}
+            className="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 disabled:opacity-50"
           >
             <option value="">Random</option>
             {topics.map((t) => (
@@ -51,28 +64,47 @@ export const ImageViewer: React.FC<Props> = ({
           </select>
         </div>
         <button
-          onClick={onNewImage}
-          className="flex items-center space-x-1 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          onClick={handleNewImage}
+          disabled={loading}
+          className="flex items-center space-x-1 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <RefreshCw className="w-4 h-4" />
-          <span>New Image</span>
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          <span>{loading ? "Loading..." : "New Image"}</span>
         </button>
       </div>
-      <div className="relative aspect-video">
+      <div className="relative aspect-video bg-gray-100 dark:bg-gray-800">
         {loading ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-            <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mb-2" />
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Loading new image...
+            </span>
           </div>
         ) : error ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-red-50 dark:bg-red-900/20">
-            <p className="text-red-500 dark:text-red-400">{error}</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-red-50 dark:bg-red-900/20 p-4">
+            <p className="text-red-500 dark:text-red-400 text-center mb-2">
+              {error}
+            </p>
+            <button
+              onClick={handleNewImage}
+              className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors text-sm"
+            >
+              Try Again
+            </button>
           </div>
-        ) : (
+        ) : currentImage ? (
           <img
             src={currentImage}
             alt="Random"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-opacity duration-300"
+            onLoad={() => setLoading(false)}
           />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              No image available
+            </span>
+          </div>
         )}
       </div>
     </div>

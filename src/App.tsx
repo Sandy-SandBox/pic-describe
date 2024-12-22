@@ -22,13 +22,17 @@ function App() {
   const handleNewImage = useCallback(async () => {
     try {
       const imageData = await getRandomImage(topic);
-      setCurrentImage({
-        url: imageData.urls.regular,
-        photographer: imageData.user.name,
-        photographerUrl: imageData.user.links.html,
-      });
+      if (imageData) {
+        setGrammarErrors([]);
+        setCurrentImage({
+          url: imageData.urls.regular,
+          photographer: imageData.user.name,
+          photographerUrl: imageData.user.links.html,
+        });
+      }
     } catch (error) {
       console.error("Failed to load image:", error);
+      throw error;
     }
   }, [topic]);
 
@@ -78,31 +82,30 @@ function App() {
 
   return (
     <div className={isDarkMode ? "dark" : ""}>
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <Navbar
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
           onShowSaved={() => setShowSaved(true)}
         />
 
-        <main className="max-w-4xl mx-auto pt-24 pb-8 px-4 space-y-8">
-          <div className="space-y-8 relative">
-            <ImageViewer
-              currentImage={currentImage?.url || ""}
-              topic={topic}
-              onTopicChange={setTopic}
-              onNewImage={handleNewImage}
-            />
+        <main className="max-w-4xl mx-auto pt-24 pb-8 px-4 space-y-6">
+          <ImageViewer
+            currentImage={currentImage?.url || ""}
+            topic={topic}
+            onTopicChange={setTopic}
+            onNewImage={handleNewImage}
+          />
 
-            <DescriptionEditor
-              onDescriptionChange={handleDescriptionChange}
-              onSave={handleSave}
-              grammarErrors={grammarErrors}
-              topic={topic}
-            />
+          <DescriptionEditor
+            onDescriptionChange={handleDescriptionChange}
+            onSave={handleSave}
+            grammarErrors={grammarErrors}
+            topic={topic}
+            currentImage={currentImage?.url || ""}
+          />
 
-            <Dashboard entries={entries} />
-          </div>
+          <Dashboard entries={entries} />
 
           {showSaved && (
             <SavedEntries
