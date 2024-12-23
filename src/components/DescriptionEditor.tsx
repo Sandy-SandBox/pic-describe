@@ -151,6 +151,7 @@ export const DescriptionEditor: React.FC<Props> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={toggleTimer}
+              data-tour="timer"
               className={`flex items-center gap-1 px-3 py-1.5 rounded-md transition-colors ${
                 isTimerRunning
                   ? "bg-red-500 hover:bg-red-600 text-white"
@@ -192,6 +193,7 @@ export const DescriptionEditor: React.FC<Props> = ({
             onDescriptionChange(e.target.value);
           }}
           placeholder="Write your description here... Try to be as detailed as possible!"
+          data-tour="description-area"
           className="w-full h-32 p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 pr-12 custom-scrollbar"
         />
         <div className="absolute right-2 bottom-2">
@@ -239,6 +241,7 @@ export const DescriptionEditor: React.FC<Props> = ({
       <div className="flex justify-end mt-4">
         <button
           onClick={handleSave}
+          data-tour="save"
           disabled={!description.trim()}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >

@@ -39,7 +39,10 @@ export const DescriptionSuggestions: React.FC<Props> = ({
 
   return (
     <div className="mt-4 p-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg">
-      <div className="flex items-center justify-between mb-4">
+      <div
+        className="flex items-center justify-between mb-4"
+        data-tour="ai-suggestions"
+      >
         <h3 className="flex items-center text-sm font-medium text-purple-800 dark:text-purple-200">
           <Lightbulb className="w-4 h-4 mr-2" />
           Need writing inspiration?

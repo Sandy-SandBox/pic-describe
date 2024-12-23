@@ -54,7 +54,8 @@ export const ImageViewer: React.FC<Props> = ({
             value={topic}
             onChange={(e) => handleTopicChange(e.target.value)}
             disabled={loading}
-            className="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 disabled:opacity-50"
+            className="topic-selector bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 disabled:opacity-50"
+            data-tour="topic-selector"
           >
             <option value="">Random</option>
             {topics.map((t) => (
@@ -67,7 +68,8 @@ export const ImageViewer: React.FC<Props> = ({
         <button
           onClick={handleNewImage}
           disabled={loading}
-          className="flex items-center space-x-1 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="new-image-btn flex items-center space-x-1 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          data-tour="new-image"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           <span>{loading ? "Loading..." : "New Image"}</span>

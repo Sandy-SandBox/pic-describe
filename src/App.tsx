@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { ImageViewer } from "./components/ImageViewer";
 import { DescriptionEditor } from "./components/DescriptionEditor";
 import { Dashboard } from "./components/Dashboard";
@@ -8,6 +8,7 @@ import { useStore } from "./store/useStore";
 import { GrammarError } from "./types";
 import { getRandomImage } from "./utils/pixabay";
 import { Footer } from "./components/Footer";
+import { TourGuide } from "./components/TourGuide";
 
 function App() {
   const { entries, isDarkMode, addEntry, toggleDarkMode } = useStore();
@@ -19,6 +20,19 @@ function App() {
   const [topic, setTopic] = useState("");
   const [grammarErrors, setGrammarErrors] = useState<GrammarError[]>([]);
   const [showSaved, setShowSaved] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+
+  useEffect(() => {
+    const hasSeenTour = localStorage.getItem("hasSeenTour");
+    if (!hasSeenTour) {
+      setShowTour(true);
+    }
+  }, []);
+
+  const handleTourComplete = () => {
+    setShowTour(false);
+    localStorage.setItem("hasSeenTour", "true");
+  };
 
   const handleNewImage = useCallback(async () => {
     try {
@@ -88,6 +102,7 @@ function App() {
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
           onShowSaved={() => setShowSaved(true)}
+          className="view-saved"
         />
 
         <main className="flex-grow max-w-4xl mx-auto pt-24 pb-8 px-4 space-y-6">
@@ -96,6 +111,7 @@ function App() {
             topic={topic}
             onTopicChange={setTopic}
             onNewImage={handleNewImage}
+            className="topic-selector new-image-btn"
           />
 
           <DescriptionEditor
@@ -104,6 +120,7 @@ function App() {
             grammarErrors={grammarErrors}
             topic={topic}
             currentImage={currentImage?.url || ""}
+            className="ai-suggestions timer-control voice-input save-description"
           />
 
           <Dashboard entries={entries} />
@@ -117,6 +134,8 @@ function App() {
         </main>
 
         <Footer />
+
+        <TourGuide run={showTour} onComplete={handleTourComplete} />
       </div>
     </div>
   );

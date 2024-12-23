@@ -54,6 +54,7 @@ export const Navbar: React.FC<Props> = ({
             <div className="flex items-center gap-2 sm:gap-4">
               <button
                 onClick={onShowSaved}
+                data-tour="view-saved"
                 className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 text-sm font-medium text-white 
                   bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500
                   rounded-full transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105
